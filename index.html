@@ -442,7 +442,19 @@
     </style>
 </head>
 <body>
-    {% include "partials/header.html" %}
+<link rel="stylesheet" href="/static/shared.css">
+<header>
+    <a class="logo shared-logo" href="browsing.html">
+        <img src="/static/error-correction-logo.jpg" alt="Error Correction logo">Error Correction
+    </a>
+    {% if not hide_saved_icon %}
+    <div class="actions">
+        <a class="saved" href="savedlist.html" aria-label="Open saved items">
+            <svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg>
+        </a>
+    </div>
+    {% endif %}
+</header>
 
     <main>
 
