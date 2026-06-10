@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f4ee">
+    <title>Browse Crochet — Error Correction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181818;
+            --paper: #f7f4ee;
+            --cream: #fffdf9;
+            --rust: #e96d84;
+            --brown: #9a684e;
+            --line: rgba(24, 24, 24, .14);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            color: var(--ink);
+            background: var(--cream);
+            font-family: "DM Sans", sans-serif;
+            flex-direction: column;
+        }
+
+        main { flex: 1 0 auto; }
+        button, input, select { color: inherit; font: inherit; }
+        button { cursor: pointer; }
+
+        header {
+            position: sticky;
+            z-index: 10;
+            top: 0;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 12px clamp(18px, 4vw, 60px);
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 253, 249, .93);
+            backdrop-filter: blur(14px);
+        }
+
+        .actions { display: flex; align-items: center; gap: 25px; color: black;}
+        .actions { justify-content: flex-end; }
+        .actions button {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .logo { display: flex; align-items: center; justify-self: start; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: black;}
+        .logo img { width: 38px; height: 38px; object-fit: cover; border-radius: 50%; mix-blend-mode: multiply; }
+
+        .saved {
+            position: relative;
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border: 1px solid var(--line) !important;
+            border-radius: 50%;
+            font-size: 17px !important;
+        }
+
+        .saved-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            display: grid;
+            width: 16px;
+            height: 16px;
+            place-items: center;
+            color: white;
+            border-radius: 50%;
+            background: var(--rust);
+            font-size: 8px;
+        }
+
+        .saved-count:empty { display: none; }
+
+        .bookmark-icon {
+            display: block;
+            width: 15px;
+            height: 19px;
+            fill: none;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 2;
+        }
+
+        .heart.active .bookmark-icon { fill: currentColor; }
+
+        .browse-intro {
+            position: relative;
+            display: grid;
+            min-height: clamp(270px, 31vw, 450px);
+            place-items: center;
+            overflow: hidden;
+            border-bottom: 1px solid var(--line);
+            background:
+                linear-gradient(rgba(24, 24, 24, .14), rgba(24, 24, 24, .14)),
+                url("https://loremflickr.com/1600/700/crochet,yarn?lock=45") center / cover;
+        }
+
+        .browse-intro::after {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, .3), rgba(24, 24, 24, .12));
+            content: "";
+        }
+
+        .intro-mark {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            text-align: center;
+        }
+
+        .intro-mark img {
+            width: clamp(105px, 12vw, 165px);
+            padding: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .94);
+            box-shadow: 0 18px 50px rgba(24, 24, 24, .2);
+        }
+
+        .catalog { padding: clamp(34px, 5vw, 68px) clamp(18px, 4vw, 60px) 100px; background: var(--cream); }
+
+        .category-switch {
+            display: flex;
+            justify-content: flex-start;
+            gap: 8px;
+            margin-bottom: clamp(28px, 4vw, 48px);
+        }
+
+        .category-button {
+            min-width: 105px;
+            padding: 11px 20px;
+            border: 1px solid black;
+            border-radius: 14px;
+            background: white;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            transition: .2s ease;
+            color: black;
+        }
+
+        .category-button:hover,
+        .category-button.active {
+            color: white;
+            /* border-color: ; */
+            background: var(--brown);
+        }
+
+        .product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 60px 22px; }
+        .product-card { min-width: 0; cursor: pointer; }
+        .product-card[hidden] { display: none; }
+
+        .image-wrap {
+            position: relative;
+            aspect-ratio: .84;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border-radius: 4px 42px 4px 4px;
+            background: #f1e9dd;
+            box-shadow: 0 12px 35px rgba(24, 24, 24, .08);
+        }
+
+        .image-wrap img { display: block; width: 100%; max-width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease, filter .45s ease; }
+        .product-card:nth-child(3n + 2) .image-wrap { border-radius: 42px 4px 4px 4px; }
+        .product-card:nth-child(3n) .image-wrap { border-radius: 4px 4px 42px 4px; }
+        .product-card:hover img { transform: scale(1.045); filter: saturate(1.08); }
+
+        .heart {
+            position: absolute;
+            z-index: 2;
+            top: 11px;
+            right: 11px;
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(251, 248, 241, .9);
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .heart.active { color: white; background: var(--rust); }
+
+        .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 0 3px; }
+        h2 { margin: 0; font-family: "Instrument Serif", serif; font-size: 23px; font-weight: 400; line-height: 1; }
+        .price { flex: 0 0 auto; font-size: 11px; font-weight: 600; color: black;}
+        .product-title { min-width: 0; }
+
+        .bought-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 9px;
+            color: #77716c;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .bought-count::before {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--brown);
+            content: "";
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 22px clamp(18px, 4vw, 60px) 16px;
+            /* border-top: 1px solid var(--line); */
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .colour-thread {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            height: 2px;
+            margin: 0 8px 8px;
+        }
+
+        .colour-thread span:nth-child(1) { background: #65a876; }
+        .colour-thread span:nth-child(2) { background: #e0b348; }
+        .colour-thread span:nth-child(3) { background: #9a684e; }
+        .colour-thread span:nth-child(4) { background: #e96d84; }
+        .colour-thread span:nth-child(5) { background: #9167bd; }
+        .colour-thread span:nth-child(6) { background: #181818; }
+
+        .toast {
+            position: fixed;
+            z-index: 20;
+            right: 20px;
+            bottom: 20px;
+            padding: 12px 15px;
+            color: white;
+            background: var(--ink);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: .2s ease;
+            text-transform: uppercase;
+        }
+
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 1100px) {
+            .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 780px) {
+            header {
+                grid-template-columns: minmax(0, 1fr) auto;
+                padding: 10px 14px;
+            }
+            .logo { justify-self: start; }
+            .logo img { width: 34px; height: 34px; }
+            .saved { width: 38px; height: 38px; }
+            .browse-intro { min-height: 270px; }
+            .intro-mark img { width: 105px; padding: 9px; }
+            .catalog { padding: 26px 12px 65px; }
+            .category-switch { margin-bottom: 26px; }
+            .category-button { min-width: 100px; min-height: 42px; padding: 10px 16px; }
+            .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 10px; }
+            .image-wrap { margin-bottom: 11px; border-radius: 3px 25px 3px 3px; }
+            .product-card:nth-child(3n + 2) .image-wrap { border-radius: 25px 3px 3px 3px; }
+            .product-card:nth-child(3n) .image-wrap { border-radius: 3px 3px 25px 3px; }
+            .heart { top: 8px; right: 8px; width: 38px; height: 38px; }
+            .meta { display: block; padding: 0 2px; }
+            h2 { font-size: 19px; line-height: 1.05; }
+            .bought-count { margin-top: 7px; font-size: 7px; }
+            .price { display: inline-block; margin-top: 7px; font-size: 10px; }
+            footer { flex-direction: row; padding: 18px 14px 14px; font-size: 8px; }
+            .colour-thread { margin: 0 5px 5px; }
+        }
+
+        @media (max-width: 360px) {
+            .logo { gap: 7px; font-size: 11px; letter-spacing: .04em; }
+            .logo img { width: 31px; height: 31px; }
+            .browse-intro { min-height: 235px; }
+            .intro-mark img { width: 92px; }
+            .catalog { padding-right: 16px; padding-left: 16px; }
+            .product-grid { grid-template-columns: 1fr; gap: 40px; }
+            .image-wrap { aspect-ratio: 1 / 1.08; border-radius: 3px 34px 3px 3px; }
+            .product-card:nth-child(3n + 2) .image-wrap { border-radius: 34px 3px 3px 3px; }
+            .product-card:nth-child(3n) .image-wrap { border-radius: 3px 3px 34px 3px; }
+            .meta { display: flex; align-items: flex-start; }
+            h2 { font-size: 23px; }
+            .price { margin-top: 0; }
+            footer { display: block; text-align: center; }
+            footer span:last-child { display: block; margin-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo"><img src="error-correction-logo.jpg" alt="Error Correction logo">Error Correction</div>
+        <div class="actions">
+            <a class="saved" href="savedlist.html" aria-label="Open saved items"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg><span class="saved-count" id="savedCount"></span></a>
+        </div>
+    </header>
+
+    <main>
+        <section class="browse-intro">
+            <div class="intro-mark">
+                <img src="error-correction-logo.jpg" alt="Error Correction">
+            </div>
+        </section>
+
+        <section class="catalog">
+            <div class="category-switch" aria-label="Product categories">
+                <button class="category-button active" type="button" data-view="all">All Products</button>
+                <button class="category-button" type="button" data-view="best">Best Seller</button>
+            </div>
+            <div class="product-grid" id="productGrid">
+                        <article class="product-card" data-category="flowers" data-price="650" data-name="Daisy Bloom Set" data-bought="385">
+                            <div class="image-wrap"><img src="https://i.pinimg.com/736x/0a/09/d6/0a09d62f86039b81f3e108af43972339.jpg" alt="Crochet daisy blooms"><button class="heart" type="button" aria-label="Save Daisy Bloom Set"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
+                            <div class="meta"><div class="product-title"><h2>Daisy Bloom Set</h2><span class="bought-count">385 bought</span></div><span class="price">₹650</span></div>
+                        </article>
+                        <article class="product-card" data-category="flowers" data-price="2400" data-name="Lavender Tulip Bouquet" data-best-seller="true" data-bought="500">
+                            <div class="image-wrap"><img src="https://i.pinimg.com/736x/1c/21/aa/1c21aaa944e5bde0ed9168c62d82864f.jpg" alt="Crochet lavender tulip bouquet"><button class="heart" type="button" aria-label="Save Lavender Tulip Bouquet"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
+                            <div class="meta"><div class="product-title"><h2>Lavender Tulip Bouquet</h2><span class="bought-count">500 bought</span></div><span class="price">₹2,400</span></div>
+                        </article>
+                        <article class="product-card" data-category="flowers" data-price="850" data-name="Pocket Posy Charm" data-bought="310">
+                            <div class="image-wrap"><img src="https://i.pinimg.com/736x/c8/60/73/c86073be8f9c78811ff84829c8421a01.jpg" alt="Crochet flower bouquet charms"><button class="heart" type="button" aria-label="Save Pocket Posy Charm"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
+                            <div class="meta"><div class="product-title"><h2>Pocket Posy Charm</h2><span class="bought-count">310 bought</span></div><span class="price">₹850</span></div>
+                        </article>
+                        <article class="product-card" data-category="flowers" data-price="450" data-name="Puff Flower Trio" data-bought="270">
+                            <div class="image-wrap"><img src="https://i.pinimg.com/736x/25/3c/43/253c43f8360c6bc1f3c2f359cf8409e9.jpg" alt="Crochet puff flower trio"><button class="heart" type="button" aria-label="Save Puff Flower Trio"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
+                            <div class="meta"><div class="product-title"><h2>Puff Flower Trio</h2><span class="bought-count">270 bought</span></div><span class="price">₹450</span></div>
+                        </article>
+                        <article class="product-card" data-category="flowers" data-price="1250" data-name="Violet Petal Bag" data-bought="190">
+                            <div class="image-wrap"><img src="https://i.pinimg.com/736x/06/19/8a/06198aa0c89761aa590ef3a3fd3ec53f.jpg" alt="Purple crochet flower bag"><button class="heart" type="button" aria-label="Save Violet Petal Bag"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
+                            <div class="meta"><div class="product-title"><h2>Violet Petal Bag</h2><span class="bought-count">190 bought</span></div><span class="price">₹1,250</span></div>
+                        </article>
+                        <article class="product-card" data-category="flowers" data-price="720" data-name="Mini Meadow Bouquet" data-best-seller="true" data-bought="420">
+                            <div class="image-wrap"><img src="https://i.pinimg.com/736x/ab/83/c3/ab83c369d9cfc051e4553f3783ff390b.jpg" alt="Mini crochet flower bouquet"><button class="heart" type="button" aria-label="Save Mini Meadow Bouquet"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
+                            <div class="meta"><div class="product-title"><h2>Mini Meadow Bouquet</h2><span class="bought-count">420 bought</span></div><span class="price">₹720</span></div>
+                        </article>
+            </div>
+        </section>
+    </main>
+
+    <footer><span>© 2026 Error Correction</span><span>Instagram · Contact</span></footer>
+    <div class="colour-thread" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+        const toast = document.querySelector("#toast");
+        const savedCount = document.querySelector("#savedCount");
+        const storageKey = "errorCorrectionFlowerSaved";
+        let timer;
+
+        function getSaved() {
+            try {
+                return JSON.parse(localStorage.getItem(storageKey)) || [];
+            } catch {
+                return [];
+            }
+        }
+
+        function setSaved(items) {
+            localStorage.setItem(storageKey, JSON.stringify(items));
+            savedCount.textContent = items.length ? items.length : "";
+        }
+
+        function productData(card) {
+            return {
+                name: card.dataset.name,
+                price: card.querySelector(".price").textContent,
+                bought: card.dataset.bought,
+                image: card.querySelector(".image-wrap img").src,
+                alt: card.querySelector(".image-wrap img").alt
+            };
+        }
+
+        function productUrl(card) {
+            const data = productData(card);
+            return `productview.html?${new URLSearchParams(data)}`;
+        }
+
+        function syncSavedButtons() {
+            const savedNames = new Set(getSaved().map(item => item.name));
+            document.querySelectorAll(".product-card").forEach(card => {
+                card.querySelector(".heart").classList.toggle("active", savedNames.has(card.dataset.name));
+            });
+            savedCount.textContent = savedNames.size ? savedNames.size : "";
+        }
+
+        [...document.querySelectorAll(".product-card")]
+            .sort((a, b) => +b.dataset.bought - +a.dataset.bought)
+            .forEach(card => document.querySelector("#productGrid").appendChild(card));
+
+        document.querySelectorAll(".category-button").forEach(button => button.addEventListener("click", () => {
+            document.querySelector(".category-button.active").classList.remove("active");
+            button.classList.add("active");
+            document.querySelectorAll(".product-card").forEach(card => {
+                card.hidden = button.dataset.view === "best" && card.dataset.bestSeller !== "true";
+            });
+        }));
+
+        document.querySelectorAll(".heart").forEach(button => button.addEventListener("click", () => {
+            const card = button.closest(".product-card");
+            const saved = getSaved();
+            const existingIndex = saved.findIndex(item => item.name === card.dataset.name);
+            if (existingIndex >= 0) saved.splice(existingIndex, 1);
+            else saved.push(productData(card));
+            setSaved(saved);
+            button.classList.toggle("active", existingIndex < 0);
+            toast.textContent = existingIndex < 0 ? "Saved to your collection" : "Removed from saved";
+            toast.classList.add("show");
+            clearTimeout(timer);
+            timer = setTimeout(() => toast.classList.remove("show"), 1600);
+        }));
+
+        document.querySelectorAll(".product-card").forEach(card => {
+            card.tabIndex = 0;
+            card.addEventListener("click", event => {
+                if (!event.target.closest(".heart")) location.href = productUrl(card);
+            });
+            card.addEventListener("keydown", event => {
+                if (event.key === "Enter") location.href = productUrl(card);
+            });
+        });
+
+        window.addEventListener("storage", syncSavedButtons);
+        window.addEventListener("pageshow", syncSavedButtons);
+        syncSavedButtons();
+    </script>
+</body>
+</html>
