@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <style>
+        
         :root {
             --ink: #181818;
             --paper: #f7f4ee;
@@ -64,6 +65,7 @@
         .logo img { width: 38px; height: 38px; object-fit: cover; border-radius: 50%; mix-blend-mode: multiply; }
 
         .saved {
+            color: #181818;
             position: relative;
             display: grid;
             width: 34px;
@@ -103,24 +105,6 @@
 
         .heart.active .bookmark-icon { fill: currentColor; }
 
-        .browse-intro {
-            position: relative;
-            display: grid;
-            min-height: clamp(270px, 31vw, 450px);
-            place-items: center;
-            overflow: hidden;
-            border-bottom: 1px solid var(--line);
-            background:
-                linear-gradient(rgba(24, 24, 24, .14), rgba(24, 24, 24, .14)),
-                url("https://loremflickr.com/1600/700/crochet,yarn?lock=45") center / cover;
-        }
-
-        .browse-intro::after {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, .3), rgba(24, 24, 24, .12));
-            content: "";
-        }
 
         .intro-mark {
             position: relative;
@@ -140,37 +124,74 @@
 
         .catalog { padding: clamp(34px, 5vw, 68px) clamp(18px, 4vw, 60px) 100px; background: var(--cream); }
 
-        .category-switch {
-            display: flex;
-            justify-content: flex-start;
-            gap: 8px;
-            margin-bottom: clamp(28px, 4vw, 48px);
+.category-switch {
+    display: inline-flex;
+    gap: 0;
+    padding: 5px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid rgba(154, 104, 78, .18);
+    box-shadow: 0 2px 8px rgba(154, 104, 78, .08);
+}
+
+.category-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 11px;
+    background: transparent;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(24, 24, 24, .4);
+    cursor: pointer;
+    transition: color .22s, background .22s, box-shadow .22s, transform .18s;
+}
+
+.category-button:not(.active):hover {
+    color: #f9dde3;
+    transform: translateY(-1px);
+}
+
+.category-button.active {
+    color: #fff;
+    background: #9a684e;
+    box-shadow: 0 2px 10px rgba(154, 104, 78, .28);
+    transform: translateY(-1px);
+}
+
+/* Remove the ::before dot if you don't want it */
+.category-button::before { display: none; }
+      
+       
+        /* Subtle pulse on the active dot */
+        @keyframes dot-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,250,244,0.4); }
+            50% { box-shadow: 0 0 0 4px rgba(255,250,244,0); }
         }
 
-        .category-button {
-            min-width: 105px;
-            padding: 11px 20px;
-            border: 1px solid black;
-            border-radius: 14px;
-            background: white;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: .12em;
-            text-transform: uppercase;
-            transition: .2s ease;
-            color: black;
-        }
-
-        .category-button:hover,
-        .category-button.active {
-            color: white;
-            /* border-color: ; */
-            background: var(--brown);
+        .category-button.active::before {
+            animation: dot-pulse 2.5s ease-in-out infinite;
         }
 
         .product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 60px 22px; }
         .product-card { min-width: 0; cursor: pointer; }
         .product-card[hidden] { display: none; }
+        .admin-edit { position:absolute; z-index:3; bottom:10px; left:10px; display:none; padding:7px 10px; color:white; border:0; border-radius:20px; background:#181818; font-size:8px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+        body.admin-mode .admin-edit { display:block; }
+        .admin-modal { position:fixed; z-index:40; inset:0; display:none; place-items:center; padding:18px; background:rgba(0,0,0,.58); }
+        .admin-modal.show { display:grid; }
+        .admin-form { width:min(100%,520px); max-height:90vh; overflow:auto; padding:28px; border-radius:4px 35px 4px 4px; background:var(--cream); box-shadow:0 24px 80px rgba(0,0,0,.22); }
+        .admin-form h3 { margin:0 0 22px; font-family:"Instrument Serif",serif; font-size:36px; font-weight:400; }
+        .admin-form label { display:block; margin-top:14px; font-size:8px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; }
+        .admin-form input { width:100%; margin-top:7px; padding:11px 0; border:0; border-bottom:1px solid var(--line); outline:0; background:transparent; }
+        .admin-actions { display:flex; gap:8px; margin-top:25px; }
+        .admin-actions button { flex:1; padding:11px; border:1px solid var(--line); border-radius:30px; background:transparent; font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+        .admin-actions .admin-save { color:white; background:var(--ink); }
 
         .image-wrap {
             position: relative;
@@ -230,31 +251,23 @@
             content: "";
         }
 
-        footer {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 22px clamp(18px, 4vw, 60px) 16px;
-            /* border-top: 1px solid var(--line); */
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: .12em;
-            text-transform: uppercase;
-        }
-
-        .colour-thread {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            height: 2px;
-            margin: 0 8px 8px;
-        }
-
-        .colour-thread span:nth-child(1) { background: #65a876; }
-        .colour-thread span:nth-child(2) { background: #e0b348; }
-        .colour-thread span:nth-child(3) { background: #9a684e; }
-        .colour-thread span:nth-child(4) { background: #e96d84; }
-        .colour-thread span:nth-child(5) { background: #9167bd; }
-        .colour-thread span:nth-child(6) { background: #181818; }
+        footer { position: relative; overflow: hidden; padding: 42px clamp(18px, 4vw, 60px) 22px; color: #fffaf4; background: #6f4939; }
+        footer::before, footer::after { position: absolute; width: 150px; height: 150px; border: 1px dashed rgba(255,250,244,.19); border-radius: 50%; content: ""; }
+        footer::before { top: -88px; left: 23%; }
+        footer::after { right: -70px; bottom: -95px; box-shadow: 0 0 0 22px rgba(255,250,244,.025), 0 0 0 44px rgba(255,250,244,.018); }
+        .footer-main { display: flex; justify-content: space-between; align-items: center; gap: 30px; padding-bottom: 34px; }
+        .footer-brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+        .footer-brand img { width: 44px; height: 44px; padding: 4px; object-fit: cover; border: 1px dashed rgba(255,250,244,.45); border-radius: 50%; background: #fffaf4; }
+        .footer-brand strong, .footer-brand em { display: block; }
+        .footer-brand strong { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+        .footer-brand em { margin-top: 4px; color: rgba(255,250,244,.48); font-family: "Instrument Serif", serif; font-size: 14px; font-weight: 400; }
+        .footer-links { display: flex; align-items: center; gap: 10px; }
+        .footer-links a { padding: 11px 16px; color: #fffaf4; border: 1px dashed rgba(255,250,244,.45); border-radius: 22px 7px 22px 7px; font-size: 8px; font-weight: 600; letter-spacing: .14em; text-decoration: none; text-transform: uppercase; transition: color .2s ease, border-color .2s ease, transform .2s ease; }
+        .footer-links a:nth-child(2) { border-radius: 7px 22px 7px 22px; }
+        .footer-links a:hover { color: #211c1a; border-color: #eeb9c3; background: #eeb9c3; transform: translateY(-2px); }
+        .footer-bottom { display: flex; justify-content: space-between; gap: 20px; padding-top: 18px; border-top: 1px dashed rgba(255,250,244,.25); color: rgba(255,250,244,.52); font-size: 7px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+        .footer-bottom a { color: inherit; text-decoration: none; }
+        .footer-bottom a:hover { color: #fffaf4; }
 
         .toast {
             position: fixed;
@@ -287,11 +300,10 @@
             .logo { justify-self: start; }
             .logo img { width: 34px; height: 34px; }
             .saved { width: 38px; height: 38px; }
-            .browse-intro { min-height: 270px; }
             .intro-mark img { width: 105px; padding: 9px; }
             .catalog { padding: 26px 12px 65px; }
             .category-switch { margin-bottom: 26px; }
-            .category-button { min-width: 100px; min-height: 42px; padding: 10px 16px; }
+            .category-button { min-width: auto; padding: 11px 18px 11px 16px; font-size: 9px; }
             .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 10px; }
             .image-wrap { margin-bottom: 11px; border-radius: 3px 25px 3px 3px; }
             .product-card:nth-child(3n + 2) .image-wrap { border-radius: 25px 3px 3px 3px; }
@@ -301,14 +313,15 @@
             h2 { font-size: 19px; line-height: 1.05; }
             .bought-count { margin-top: 7px; font-size: 7px; }
             .price { display: inline-block; margin-top: 7px; font-size: 10px; }
-            footer { flex-direction: row; padding: 18px 14px 14px; font-size: 8px; }
-            .colour-thread { margin: 0 5px 5px; }
+            footer { padding: 32px 14px 18px; }
+            .footer-main { align-items: flex-start; flex-direction: column; gap: 25px; padding-bottom: 28px; }
+            .footer-links { flex-wrap: wrap; gap: 14px 22px; }
+            .footer-bottom { align-items: flex-start; flex-direction: column; gap: 9px; }
         }
 
         @media (max-width: 360px) {
             .logo { gap: 7px; font-size: 11px; letter-spacing: .04em; }
             .logo img { width: 31px; height: 31px; }
-            .browse-intro { min-height: 235px; }
             .intro-mark img { width: 92px; }
             .catalog { padding-right: 16px; padding-left: 16px; }
             .product-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -318,31 +331,122 @@
             .meta { display: flex; align-items: flex-start; }
             h2 { font-size: 23px; }
             .price { margin-top: 0; }
-            footer { display: block; text-align: center; }
-            footer span:last-child { display: block; margin-top: 8px; }
         }
+        /* Unified footer - Silicon Mania style */
+        footer {
+            position: relative;
+            overflow: hidden;
+            padding: clamp(24px, 4vw, 42px) clamp(18px, 4vw, 60px) 24px;
+            background: var(--cream);
+            border-top: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .footer-main {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .footer-links {
+            display: flex;
+            align-items: center;
+            gap: clamp(16px, 3vw, 32px);
+        }
+        .footer-links a {
+            text-decoration: none;
+            color: var(--ink);
+            border-bottom: 1.5px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        .footer-links a:hover {
+            border-bottom-color: var(--ink);
+        }
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: #6b6b6b;
+        }
+        .text-ink-3 {
+            color: #b5b5b5;
+        }
+        .bar-stack {
+            width: 100%;
+            height: 2px;
+            display: flex;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .bar-stack > span {
+            flex: 1 1 0;
+            height: 100%;
+            display: block;
+            transform-origin: 0;
+            transform: scaleX(0);
+        }
+        .bar-stack > span:nth-child(1) { background: #5dbe3d; }
+        .bar-stack > span:nth-child(2) { background: #f5c518; }
+        .bar-stack > span:nth-child(3) { background: #f08a1c; }
+        .bar-stack > span:nth-child(4) { background: #e63d38; }
+        .bar-stack > span:nth-child(5) { background: #9a3db3; }
+        .bar-stack > span:nth-child(6) { background: #1fa8e8; }
+
+        @keyframes bar-rise {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+        .bar-stack.is-visible > span {
+            animation: bar-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .bar-stack.is-visible > span:nth-child(1) { animation-delay: 0s; }
+        .bar-stack.is-visible > span:nth-child(2) { animation-delay: 0.1s; }
+        .bar-stack.is-visible > span:nth-child(3) { animation-delay: 0.2s; }
+        .bar-stack.is-visible > span:nth-child(4) { animation-delay: 0.3s; }
+        .bar-stack.is-visible > span:nth-child(5) { animation-delay: 0.4s; }
+        .bar-stack.is-visible > span:nth-child(6) { animation-delay: 0.5s; }
+
+        @media (max-width: 600px) {
+            .footer-main {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 14px;
+            }
+            .footer-links {
+                justify-content: center;
+            }
+        }
+
+        /* Final responsive category controls and footer alignment */
+        .category-switch { display:grid; width:fit-content; max-width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; padding:5px; border:1px solid var(--line); border-radius:14px; background:#f3f0ea; }
+        .category-button { min-width:132px; min-height:42px; padding:10px 18px; color:#4d4a46; border:1px solid transparent; border-radius:10px; background:transparent; box-shadow:none; }
+        .category-button:not(.active):hover { color:var(--ink); border-color:var(--line); background:var(--cream); }
+        .category-button.active { color:var(--cream); border-color:var(--ink); background:var(--ink); box-shadow:0 5px 14px rgba(24,24,24,.16); }
+        footer .footer-main { justify-content:flex-start; }
+        footer .footer-links { justify-content:flex-start; }
+        footer .footer-links a { color:var(--ink); visibility:visible; opacity:1; }
+        @media (max-width:600px) {
+            .category-switch { width:100%; }
+            .category-button { min-width:0; width:100%; padding:10px 8px; font-size:8px; letter-spacing:.09em; }
+            footer .footer-main { align-items:flex-start; text-align:left; }
+        }
+
+        
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo"><img src="error-correction-logo.jpg" alt="Error Correction logo">Error Correction</div>
-        <div class="actions">
-            <a class="saved" href="savedlist.html" aria-label="Open saved items"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg><span class="saved-count" id="savedCount"></span></a>
-        </div>
-    </header>
+    {% include "partials/header.html" %}
 
     <main>
-        <section class="browse-intro">
-            <div class="intro-mark">
-                <img src="error-correction-logo.jpg" alt="Error Correction">
-            </div>
-        </section>
 
         <section class="catalog">
-            <div class="category-switch" aria-label="Product categories">
-                <button class="category-button active" type="button" data-view="all">All Products</button>
-                <button class="category-button" type="button" data-view="best">Best Seller</button>
-            </div>
             <div class="product-grid" id="productGrid">
                         <article class="product-card" data-category="flowers" data-price="650" data-name="Daisy Bloom Set" data-bought="385">
                             <div class="image-wrap"><img src="https://i.pinimg.com/736x/0a/09/d6/0a09d62f86039b81f3e108af43972339.jpg" alt="Crochet daisy blooms"><button class="heart" type="button" aria-label="Save Daisy Bloom Set"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
@@ -360,27 +464,22 @@
                             <div class="image-wrap"><img src="https://i.pinimg.com/736x/25/3c/43/253c43f8360c6bc1f3c2f359cf8409e9.jpg" alt="Crochet puff flower trio"><button class="heart" type="button" aria-label="Save Puff Flower Trio"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
                             <div class="meta"><div class="product-title"><h2>Puff Flower Trio</h2><span class="bought-count">270 bought</span></div><span class="price">₹450</span></div>
                         </article>
-                        <article class="product-card" data-category="flowers" data-price="1250" data-name="Violet Petal Bag" data-bought="190">
-                            <div class="image-wrap"><img src="https://i.pinimg.com/736x/06/19/8a/06198aa0c89761aa590ef3a3fd3ec53f.jpg" alt="Purple crochet flower bag"><button class="heart" type="button" aria-label="Save Violet Petal Bag"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
-                            <div class="meta"><div class="product-title"><h2>Violet Petal Bag</h2><span class="bought-count">190 bought</span></div><span class="price">₹1,250</span></div>
-                        </article>
-                        <article class="product-card" data-category="flowers" data-price="720" data-name="Mini Meadow Bouquet" data-best-seller="true" data-bought="420">
-                            <div class="image-wrap"><img src="https://i.pinimg.com/736x/ab/83/c3/ab83c369d9cfc051e4553f3783ff390b.jpg" alt="Mini crochet flower bouquet"><button class="heart" type="button" aria-label="Save Mini Meadow Bouquet"><svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 18 22"><path d="M3 2h12a1 1 0 0 1 1 1v17l-7-5-7 5V3a1 1 0 0 1 1-1Z"/></svg></button></div>
-                            <div class="meta"><div class="product-title"><h2>Mini Meadow Bouquet</h2><span class="bought-count">420 bought</span></div><span class="price">₹720</span></div>
-                        </article>
+                       
             </div>
         </section>
     </main>
 
-    <footer><span>© 2026 Error Correction</span><span>Instagram · Contact</span></footer>
-    <div class="colour-thread" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    {% include "partials/footer.html" %}
     <div class="toast" id="toast" role="status"></div>
+    <div class="admin-modal" id="adminModal"><form class="admin-form" id="adminForm"><h3>Edit product</h3><label>Main photo<input id="adminImage" name="mainPhoto" type="file" accept="image/*"></label><label>Product view photos<input id="adminGallery" name="galleryPhotos" type="file" accept="image/*" multiple></label><label>Title<input id="adminName" name="name" required></label><label>Price<input id="adminPrice" name="price" required></label><label>Number bought<input id="adminBought" name="bought" type="number" min="0" required></label><div class="admin-actions"><button id="adminCancel" type="button">Cancel</button><button class="admin-save" type="submit">Save changes</button></div></form></div>
 
     <script>
         const toast = document.querySelector("#toast");
         const savedCount = document.querySelector("#savedCount");
         const storageKey = "errorCorrectionFlowerSaved";
+        const adminKey = new URLSearchParams(location.search).get("admin");
         let timer;
+        let editingCard;
 
         function getSaved() {
             try {
@@ -407,6 +506,8 @@
 
         function productUrl(card) {
             const data = productData(card);
+            if (card.dataset.id) data.id = card.dataset.id;
+            if (adminKey) data.admin = adminKey;
             return `productview.html?${new URLSearchParams(data)}`;
         }
 
@@ -416,6 +517,57 @@
                 card.querySelector(".heart").classList.toggle("active", savedNames.has(card.dataset.name));
             });
             savedCount.textContent = savedNames.size ? savedNames.size : "";
+        }
+
+        async function loadProducts() {
+            try {
+                const response = await fetch("/api/products");
+                if (!response.ok) return;
+                const products = await response.json();
+                const cards = [...document.querySelectorAll(".product-card")];
+                products.forEach((product, index) => {
+                    const card = cards[index];
+                    if (!card) return;
+                    card.dataset.id = product.id;
+                    card.productData = product;
+                    card.dataset.name = product.name;
+                    card.dataset.price = product.price.replace(/\D/g, "");
+                    card.dataset.bought = product.bought;
+                    if (product.bestSeller) card.dataset.bestSeller = "true";
+                    else delete card.dataset.bestSeller;
+                    card.querySelector("img").src = product.image;
+                    card.querySelector("img").alt = product.alt;
+                    card.querySelector("h2").textContent = product.name;
+                    card.querySelector(".price").textContent = product.price;
+                    card.querySelector(".bought-count").textContent = `${product.bought} bought`;
+                    card.querySelector(".heart").setAttribute("aria-label", `Save ${product.name}`);
+                });
+                cards.sort((a,b) => +b.dataset.bought - +a.dataset.bought).forEach(card => document.querySelector("#productGrid").appendChild(card));
+                syncSavedButtons();
+            } catch {}
+        }
+
+        async function setupAdmin() {
+            if (!adminKey) return;
+            const response = await fetch(`/api/admin-status?admin=${encodeURIComponent(adminKey)}`);
+            if (!response.ok || !(await response.json()).admin) return;
+            document.body.classList.add("admin-mode");
+            document.querySelectorAll(".product-card").forEach(card => {
+                const button = document.createElement("button");
+                button.className = "admin-edit";
+                button.type = "button";
+                button.textContent = "Edit";
+                card.querySelector(".image-wrap").appendChild(button);
+                button.addEventListener("click", event => {
+                    event.stopPropagation();
+                    editingCard = card;
+                    document.querySelector("#adminForm").reset();
+                    document.querySelector("#adminName").value = card.dataset.name;
+                    document.querySelector("#adminPrice").value = card.querySelector(".price").textContent;
+                    document.querySelector("#adminBought").value = card.dataset.bought;
+                    document.querySelector("#adminModal").classList.add("show");
+                });
+            });
         }
 
         [...document.querySelectorAll(".product-card")]
@@ -456,7 +608,32 @@
 
         window.addEventListener("storage", syncSavedButtons);
         window.addEventListener("pageshow", syncSavedButtons);
-        syncSavedButtons();
+        document.querySelector("#adminCancel").addEventListener("click", () => document.querySelector("#adminModal").classList.remove("show"));
+        document.querySelector("#adminForm").addEventListener("submit", async event => {
+            event.preventDefault();
+            const response = await fetch(`/api/products/${editingCard.dataset.id}?admin=${encodeURIComponent(adminKey)}`, {method: "PUT", body: new FormData(event.currentTarget)});
+            if (response.ok) {
+                document.querySelector("#adminModal").classList.remove("show");
+                await loadProducts();
+                toast.textContent = "Product updated";
+                toast.classList.add("show");
+                setTimeout(() => toast.classList.remove("show"), 1600);
+            } else {
+                toast.textContent = "Admin key rejected";
+                toast.classList.add("show");
+            }
+        });
+        loadProducts().then(setupAdmin);
+
+        // Footer accent bar observer
+        const footerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.bar-stack.stagger').forEach(el => footerObserver.observe(el));
     </script>
 </body>
 </html>
